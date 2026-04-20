@@ -1,0 +1,3 @@
+Commit 1 Reflection Notes
+
+Di commit pertama ini, kita membuat sebuah server TCP sederhana yang mendengarkan koneksi pada alamat `127.0.0.1:7878' dan menangani setiap koneksi yang masuk dengan memanggil fungsi `handle_connection`. Kita juga menambahkan beberapa import yang diperlukan untuk bekerja dengan TCP dan I/O. Fungsi 'handle_connection' berfungsi untuk mengambil aliran TCP yang masuk dan memprint tiap line dari aliran tersebut menggunakan 'BufReader' dan berhenti ketika mencapai akhir aliran. 
