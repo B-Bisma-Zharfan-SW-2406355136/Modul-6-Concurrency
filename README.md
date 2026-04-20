@@ -13,3 +13,7 @@ Commit 3 Reflection Notes
 Pada commit ketiga ini, kita menambahkan conditional jika page yang diminta tidak ditemukan, maka server akan mengirimkan respons HTTP dengan status "404 NOT FOUND" dan menampilkan halaman '404.html'. Kita juga menambahkan file '404.html' yang berisi pesan "404: File Not Found". Dengan perubahan ini, jika kita mencoba mengakses halaman yang tidak ada di server, kita akan melihat halaman 404 yang sesuai.
 
 ![Commit 3 screen capture](/assets/images/commit3.png)
+
+Commit 4 Reflection Notes
+
+Pada commit keempat ini, kita menambahkan simulasi delay pada server dengan menggunakan fungsi 'thread::sleep' untuk menunda respons selama 10 detik, ketika mengakses 127.0.0.1/sleep. Dengan perubahan ini, ketika kita mengakses URL tersebut, kita akan melihat bahwa server membutuhkan waktu 10 detik untuk merespons, yang mensimulasikan kondisi di mana server sedang sibuk atau mengalami beban tinggi.
