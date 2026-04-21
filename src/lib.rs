@@ -11,8 +11,10 @@ pub struct ThreadPool{
 type Job = Box<dyn FnOnce() + Send + 'static>;
 
 impl ThreadPool {
-    pub fn new(size: usize) -> ThreadPool {
-        assert!(size > 0);
+    pub fn build(size: usize) -> Result<ThreadPool, &'static str> {
+        if size == 0 {
+            return Err("Size must be greater than zero.");
+        }    
        
         let (sender, receiver) = mpsc::channel();
 
@@ -23,7 +25,7 @@ impl ThreadPool {
         for i in 0..size {
             workers.push(Worker::new(i, Arc::clone(&receiver)));
         }
-        ThreadPool {workers, sender }
+        Ok(ThreadPool {workers, sender })
     }
 
     pub fn execute<F>(&self, f: F)
@@ -31,7 +33,9 @@ impl ThreadPool {
         F: FnOnce() + Send + 'static,
     {
         let job = Box::new(f);
-        self.sender.send(job).unwrap();
+        if let Err(_) = self.sender.send(job) {
+            eprintln!("Failed to send job to thread pool.");
+        }
     }
 }
 
@@ -43,7 +47,20 @@ impl Worker {
     fn new(id: usize, receiver: Arc<Mutex<mpsc::Receiver<Job>>>) -> Worker {
         let thread = thread::spawn(move || {
             loop {
-                let job = receiver.lock().unwrap().recv().unwrap();
+                let locked_receiver = match receiver.lock() {
+                    Ok(receiver) => receiver,
+                    Err(_) => {
+                        eprintln!("Failed to acquire lock on receiver.");
+                        break; // Keluar dari loop jika tidak bisa mendapatkan lock
+                    }
+                };
+                let job = match locked_receiver.recv() {
+                    Ok(job) => job,
+                    Err(_) => {
+                        eprintln!("Worker {id} disconnected; shutting down.");
+                        break; // Keluar dari loop jika channel sudah ditutup
+                    }
+                };
 
                 println!("Worker {id} got a job; executing.");
 
